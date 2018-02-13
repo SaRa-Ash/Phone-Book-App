@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <title>Phone Book App</title>
+
+
+
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <nav class="navbar navbar-inverse ">
+      <div class="container">
+        <div class="navbar-header">
+
+          <a class="navbar-brand" href="#">Phone Book App</a>
+        </div>
+
+      </div>
+    </nav>
+
+
+    <!-- dividing the window to three horizontal parts, the search bar, the add contacts and the display-->
+    <div class="container">
+
+      <!--first section/panel-->
+
+      <div class="row">
+        <div class="Addcontacts-wrapper">
+          <div class="panel panel-default"> <!--add a panel div-->
+            <div class="panel-heading">Add New Contacts</div>
+
+            <!--panel body containing add new contact name,phone and mail-->
+            <div class="panel-body">
+
+
+              <form class="form-inline">
+                <div class="form-group">
+                  <label for="name">Name:</label>
+                  <input type="text" class="form-control" id="name" placeholder="Jane Doe">
+                </div>
+
+
+
+                <form class="form-inline">
+                  <div class="form-group">
+                    <label for="phone">Phone:</label>
+                    <input type="text" class="form-control" id="phone" placeholder="01003280824">
+                  </div>
+
+
+                  <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="mail" placeholder="jane.doe@example.com">
+                  </div>
+
+
+                  <button type="button" class="btn btn-primary" onclick="add()">Add Contact</button>
+                  </div>
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!--second section/panel-->
+
+      <div class="container">
+        <div class="row">
+          <div class="search-wrapper">
+
+            <div class="panel panel-default"> <!--add a panel-->
+              <div class="panel-heading">Search Contacts</div>
+
+              <!--panel body containing add new contact name,phone and mail-->
+              <div class="panel-body">
+                <form class="form-inline">
+                  <input type="text" class="form-control" id="data" placeholder="Search Contacts..">
+                  <button type="button" class="btn btn-primary" onclick="lookup()">Search</button>
+                </form>
+              </div>
+
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+
+      <div class="container" id="phoneapp">
+        <div class="row">
+          <div class="display-wrapper">
+
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+
+    <!--the edit modal-->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+      <div class="modal-dialog">
+        <div class="modal-content"></div>
+      </div>
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"> <span aria-hidden="true" class="">×  </span><span class="sr-only">Close</span>
+
+            </button>
+            <h4 class="modal-title" id="myModalLabel"><b>Edit</b></h4>
+
+          </div>
+          <div class="modal-body">
+            <form>
+
+              <label for="name">Name:</label>
+              <input type="text" class="form-control" id="newName" placeholder="Jane Doe">
+
+              <form class="form-inline">
+                <div class="form-group">
+                  <label for="phone">Phone:</label>
+                  <input type="text" class="form-control" id="newPhone" placeholder="01003280824">
+                </div>
+
+
+                <div class="form-group">
+                  <label for="email">Email:</label>
+                  <input type="email" class="form-control" id="newMail" placeholder="jane.doe@example.com">
+                </div>
+
+                </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="edit()">Save changes</button>
+              </div>
+              </div>
+          </div>
+        </div>
+
+
+        <script>
+
+
+
+          var id,id2,id3;
+
+          //retrieve data from json placeholder link
+          var xhReq = new XMLHttpRequest();
+          xhReq.open("GET", 'https://jsonplaceholder.typicode.com/users', false);
+          xhReq.send(null);
+          var jsonObject = JSON.parse(xhReq.responseText); // this is an array of my json objects retrieved from the url
+          //alert(jsonObject["name"]);
+          // var name=jsonObject["phone"]; 
+          //console.log(jsonObject);
+          console.log(jsonObject[0].name);
+
+          //var ul = document.getElementById('name'); // Get the list where we will place our authors
+          // var url = 'http://jsonplaceholder.typicode.com/users'; // Get 10 random users
+
+
+
+
+
+
+
+
+
+          var html = '<table class="table table-striped" id="myTable">'+'<thead>'+'<tr>'+ ' <th>Name</th>' + '<th>Phone</th>' + '<th>Email</th>' +
+              '<th>Action</th>' + '</tr>' + '</thead>' + '<tbody>';
+
+
+
+          for (var i = 0; i < jsonObject.length; i++) {
+            html+="<tr>";
+            html+="<td id=name"+i+">";
+            html+=jsonObject[i].name;
+            html+="<td id=mail"+i+">";
+            html+=jsonObject[i].email+"</td>";
+            html+="<td id=phone"+i+">";
+            html+=jsonObject[i].phone+"</td>";
+
+            html+="<td>"+'<button type="button" class="btn btn-info" data-toggle="modal" onclick="save(this)" data-target="#myModal">'+'Edit</button>'+'&nbsp;'; 
+            html+='<button type="button" class="btn btn-danger" onclick="remove(this)">'+'Delete</button>'+'</td>';
+            html+="</tr>";
+
+
+
+            // <td>
+            //             <button type="button" class="btn btn-info">Edit</button>
+            //             <button type="button" class="btn btn-danger">Delete</button>
+            //           </td>
+
+          }
+          html+="</table>";
+          document.getElementById("phoneapp").innerHTML = html;
+
+          //add a new contact
+          function add(){
+
+            var html = '';
+
+            //            //send data to json link
+            //     fetch('https://jsonplaceholder.typicode.com/users', {
+            //   method: 'POST',
+            //   body: JSON.stringify({
+            //     name: 'test',
+            //     email: 'test@gmail.com',
+            //     phone: '01006004578'
+            //   }),
+            //   headers: {
+            //     "Content-type": "application/json; charset=UTF-8"
+            //   }
+            // })
+
+            // .then(response => response.json())
+            // .then(data => obj = data)
+            // .then(console.log)
+            // .then(() => alert(obj.name))
+            // .then(() => console.log(obj.name))
+
+            var x = (document.getElementById("myTable").rows.length)-1;
+            alert(x);
+            var table = document.getElementById("myTable");
+            var row = table.insertRow(-1);
+            var cell1 = row.insertCell(0);
+            cell1.id = "name"+x; //set id of the new cell
+            var cell2 = row.insertCell(1);
+            cell2.id = "mail"+x;
+            var cell3 = row.insertCell(2);
+            cell3.id = "phone"+x;
+            var cell4 = row.insertCell(3);
+            if(document.getElementById("name").value==""){
+              alert("please insert a name");
+            }
+            else{
+            cell1.innerHTML = document.getElementById("name").value;
+            }
+            if(document.getElementById("mail").value==""){
+              alert("please insert an email");
+            }
+            else{
+            cell2.innerHTML = document.getElementById("mail").value;;
+            }
+            if(document.getElementById("phone").value==""){
+            alert("please insert phone number");
+            }
+            else{
+            cell3.innerHTML = document.getElementById("phone").value;
+            cell4.innerHTML = "<button type='button' class='btn btn-info' data-toggle='modal' data-target='#myModal' onclick='save(this)'>Edit</button> <button type='button' class='btn btn-danger onclick='delRow(3)'>Delete</button>";
+
+            }
+            
+            
+          }
+
+          function lookup(){
+            // alert('hi');
+            var input, filter, table, tr, td, i;
+            input = document.getElementById("data");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("myTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+              td = tr[i].getElementsByTagName("td")[0]; //looping on the table with the first cell which is the name
+              if (td) {
+                if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                  tr[i].style.display = "";
+                } else {
+                  tr[i].style.display = "none";
+                }
+              }       
+            }
+          }
+
+          function remove(i){
+
+            var p=i.parentNode.parentNode;
+            p.parentNode.removeChild(p);
+          }
+
+
+
+
+          function save(s){
+
+
+
+            //var newName = document.getElementById("newName").value;
+
+            //get the name of the current row clicked
+            var name=s.parentNode.parentNode;
+            id=name.cells[0].id;
+            name=name.cells[0].innerHTML;
+            console.log(id,name);
+            //document.getElementById(id).innerHTML = "";  
+
+
+            //get the phone of the current row clicked
+            var phone=s.parentNode.parentNode;
+            id2 = phone.cells[1].id;
+            phone=phone.cells[1].innerHTML  
+            //document.getElementById(id2).innerHTML = '';  
+
+            //return res;
+
+            //get the mail of the current row clicked
+            var mail=s.parentNode.parentNode;
+            id3 = mail.cells[2].id;
+            mail=mail.cells[2].innerHTML 
+            //document.getElementById(id3).innerHTML = '';  
+            console.log( mail );
+
+
+          }
+
+
+
+          function edit(){
+            if (!(document.getElementById('newName').value=="")){
+              var newName = document.getElementById("newName").value;
+              document.getElementById(id).innerHTML = newName;
+
+            }
+
+            if (!(document.getElementById('newPhone').value=="")){
+              var newPhone = document.getElementById("newPhone").value;
+              document.getElementById(id2).innerHTML = newPhone;
+            }
+
+            if (!(document.getElementById('newMail').value=="")){
+              var newMail = document.getElementById("newMail").value;
+              document.getElementById(id3).innerHTML = newMail;
+            }
+            if((document.getElementById('newName').value=="") && (document.getElementById('newPhone').value=="") && (document.getElementById('newMail').value=="")){
+              alert("please enter data to be updated");
+            }
+
+          }
+
+
+
+
+          function delRow(currElement) {
+            document.getElementById("row"+no+"").outerHTML="";
+          }
+
+          // const params = {
+          //       name: 'test',
+          //       email: 'test@gmail.com',
+          //       phone: '01006004578'
+          //         }
+
+          //         const http = new XMLHttpRequest()
+          //         http.open('POST', 'https://jsonplaceholder.typicode.com/users' , false)
+          //         http.setRequestHeader('Content-type', 'application/json')
+          //         http.send(JSON.stringify(params)) // Make sure to stringify
+          //         http.onload = function() {
+          //             // Do whatever with response
+          //             alert(http.responseText)
+          //             console.log(http.responseText);
+          //         }
+          //     }
+
+
+
+          // var jsonObject = JSON.parse(json);
+          // alert(jsonObject[0].name);
+          //     }
+
+
+
+        </script>
+
+        </body>
+      </html>
